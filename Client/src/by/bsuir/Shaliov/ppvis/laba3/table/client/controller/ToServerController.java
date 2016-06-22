@@ -28,10 +28,8 @@ public class ToServerController {
     }
 
     public void startRunningClient() {
-
         try {
-            socket = new Socket(JOptionPane.showInputDialog("Host"), 5225);
-            System.out.println("Client is running");
+            socket = new Socket(JOptionPane.showInputDialog("host: ").trim(), 5225);
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             inputStream = new ObjectInputStream(socket.getInputStream());
             outputStream.flush();

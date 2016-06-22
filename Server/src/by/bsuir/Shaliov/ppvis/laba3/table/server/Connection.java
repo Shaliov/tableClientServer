@@ -66,6 +66,9 @@ public class Connection extends Thread {
                 message = (String) inputStream.readObject();
                 textArea.append("\n" + message);
                 switch (message) {
+                    case ClientServer.ALL_RECORD:
+                        outputStream.writeObject(storage.getTeacherList().size());
+                        break;
                     case ClientServer.FIRST_PAGE:
                         nameTable = (String) inputStream.readObject();
                         if (nameTable.equals("teacherTable")) {
@@ -83,7 +86,6 @@ public class Connection extends Thread {
                             outputStream.writeObject(pageSearch.goLeft());
                         }
                         break;
-
                     case ClientServer.NEXT_PAGE:
                         nameTable = (String) inputStream.readObject();
                         if (nameTable.equals("teacherTable")) {
@@ -118,6 +120,7 @@ public class Connection extends Thread {
                         break;
 
                     case ClientServer.OPEN_FILE:
+                        storage.getTeacherList().clear();
                         File myFolder = new File("D:\\TestXML");
                         File[] files = myFolder.listFiles();
                         outputStream.writeObject(files);

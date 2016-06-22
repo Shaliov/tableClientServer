@@ -22,7 +22,6 @@ public class FileChooserListener implements ActionListener {
         JDialog dialog = new JDialog();
         dialog.setTitle("File chooser");
         dialog.setLocationRelativeTo(null);
-        // dialog.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         dialog.setSize(200, 60);
         dialog.setResizable(false);
         try {

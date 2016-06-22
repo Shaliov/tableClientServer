@@ -21,10 +21,10 @@ public class MenuBar extends JMenuBar {
 
         fileMenu.setMnemonic('F');
         JMenuItem saveFile = new JMenuItem("Save");
-        saveFile.addActionListener(new FileSaver() {});
+        saveFile.addActionListener(new FileSaver());
         fileMenu.add(saveFile);
         JMenuItem openFile = new JMenuItem("Open file");
-        openFile.addActionListener(new FileChooserListener() {});
+        openFile.addActionListener(new FileChooserListener());
         fileMenu.add(openFile);
     }
 

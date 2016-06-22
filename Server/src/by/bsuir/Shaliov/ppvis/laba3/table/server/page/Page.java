@@ -106,7 +106,7 @@ public class Page {
         return newList;
     }
 
-    private void endPage() {
+    public void endPage() {
         studentList = storage.getTeacherList();
         size = studentList.size();
 
@@ -116,5 +116,9 @@ public class Page {
         if (endPage == 0) {
             endPage = numberRecords;
         }
+    }
+
+    public int getEndPage() {
+        return endPage;
     }
 }

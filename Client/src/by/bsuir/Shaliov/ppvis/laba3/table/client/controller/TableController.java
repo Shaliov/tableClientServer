@@ -19,7 +19,6 @@ public class TableController {
     private JSlider slider;
     private JLabel sliderMark;
     private int rowOnPage;
-    private int lastPage;
     private TableModel tableModel;
 
     private TableController() {
@@ -30,12 +29,10 @@ public class TableController {
         return e -> {
             slider = (JSlider) e.getSource();
             if (!slider.getValueIsAdjusting()) {
-                rowOnPage = slider.getValue();
-                sliderMark.setText(String.valueOf(rowOnPage));
                 try {
                     ToServerController.getInstance().getOutputStream().writeObject(ClientServer.NUMBER_RECORDS);
                     ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
-                    ToServerController.getInstance().getOutputStream().writeObject(rowOnPage);
+                    ToServerController.getInstance().getOutputStream().writeObject(slider.getValue());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -51,18 +48,27 @@ public class TableController {
 
 
     public void firstPage() {
-        try {
-            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.FIRST_PAGE);
-            ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
-            tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+            try {
+                ToServerController.getInstance().getOutputStream().writeObject(ClientServer.ALL_RECORD);
+                rowOnPage = (int) ToServerController.getInstance().getInputStream().readObject();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            sliderMark.setText(String.valueOf(rowOnPage));
+            try {
+                ToServerController.getInstance().getOutputStream().writeObject(ClientServer.FIRST_PAGE);
+                ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+                tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
 
-        } catch (IOException e1) {
-            JOptionPane.showMessageDialog(null, "Server disconnected");
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(null, "Server disconnected");
 
-        } catch (ClassNotFoundException e1) {
-            e1.printStackTrace();
-        }
-        refresh();
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            refresh();
     }
 
 
@@ -82,32 +88,32 @@ public class TableController {
     }
 
     public void prev() {
-        try {
-            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.PREVIOUS_PAGE);
-            ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
-            tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
-            refresh();
-        } catch (IOException e1) {
-            JOptionPane.showMessageDialog(null, "Server disconnected");
+            try {
+                ToServerController.getInstance().getOutputStream().writeObject(ClientServer.PREVIOUS_PAGE);
+                ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+                tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+                refresh();
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(null, "Server disconnected");
 
-        } catch (ClassNotFoundException e1) {
-            e1.printStackTrace();
-        }
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
     }
 
     public void next() {
-        try {
-            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.NEXT_PAGE);
-            ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
-            tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
-            refresh();
+            try {
+                ToServerController.getInstance().getOutputStream().writeObject(ClientServer.NEXT_PAGE);
+                ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+                tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+                refresh();
 
-        } catch (IOException e1) {
-            JOptionPane.showMessageDialog(null, "Server disconnected");
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(null, "Server disconnected");
 
-        } catch (ClassNotFoundException e1) {
-            e1.printStackTrace();
-        }
+            } catch (ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
     }
 
     public void clear() {
@@ -154,14 +160,6 @@ public class TableController {
 
     public void setRowOnPage(int rowOnPage) {
         this.rowOnPage = rowOnPage;
-    }
-
-    public int getLastPage() {
-        return lastPage;
-    }
-
-    public void setLastPage(int lastPage) {
-        this.lastPage = lastPage;
     }
 
 }

@@ -2,13 +2,16 @@ package by.bsuir.Shaliov.ppvis.laba3.table.client.view.panel;
 
 
 import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.TableController;
+import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.ToServerController;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.model.TableModel;
+import by.bsuir.Shaliov.ppvis.laba3.table.overall.constants.ClientServer;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.model.Teacher;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
  * Created by Andrey on 5/30/2016.
@@ -122,7 +125,6 @@ public class TableComponent extends JPanel {
             }
         });
 
-
         box.add(first);
         box.add(prev);
         box.add(next);
@@ -130,18 +132,27 @@ public class TableComponent extends JPanel {
     }
 
     private void addSlider(Box box) {
-        slider = new JSlider(0, 20, 2);
-        slider.setMajorTickSpacing(5);
+        slider = new JSlider(2, 20, 2);
+        slider.setMajorTickSpacing(3);
         slider.setMinorTickSpacing(1);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
         slider.setSnapToTicks(true);
-        sliderMark = new JLabel(String.valueOf(2));
+        int rowOnPage = 2;
+        try {
+            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.ALL_RECORD);
+            rowOnPage = (int) ToServerController.getInstance().getInputStream().readObject();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
+        sliderMark = new JLabel(String.valueOf(rowOnPage));
         slider.addChangeListener(tableController.addSlideListener());
 
         tableController.setSlider(slider);
         tableController.setSliderMark(sliderMark);
-        tableController.setRowOnPage(2);
+        tableController.setRowOnPage(rowOnPage);
         box.add(slider);
         box.add(Box.createHorizontalStrut(12));
         box.add(sliderMark);
