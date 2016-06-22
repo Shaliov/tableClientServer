@@ -7,6 +7,12 @@ import by.bsuir.Shaliov.ppvis.laba3.table.client.view.dialog.FindDialog;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.view.frame.MainFrame;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.view.panel.TableComponent;
 
+import javax.swing.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
 /**
  * Created by Andrey on 5/31/2016.
  */
@@ -17,6 +23,7 @@ public class MainFrameController {
     private DeleteDialog deleteDialog;
     private FindDialog findDialog;
     private TableComponent tableComponent;
+
 
     private MainFrameController() {
     }
@@ -59,7 +66,6 @@ public class MainFrameController {
         }
         return instance;
     }
-
     public void setMainFrame(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
     }
@@ -67,5 +73,4 @@ public class MainFrameController {
     public void setTableComponent(TableComponent tableComponent) {
         this.tableComponent = tableComponent;
     }
-
 }

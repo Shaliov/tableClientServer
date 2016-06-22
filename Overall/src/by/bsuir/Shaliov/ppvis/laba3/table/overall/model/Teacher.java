@@ -1,11 +1,12 @@
 package by.bsuir.Shaliov.ppvis.laba3.table.overall.model;
 
 
+import java.io.Serializable;
 
 /**
  * Created by Andrey on 5/30/2016.
  */
-public class Teacher {
+public class Teacher implements Serializable {
     private String fio;
     private String name;
     private String secondaryName;

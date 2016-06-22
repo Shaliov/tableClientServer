@@ -15,16 +15,20 @@ import java.util.List;
 public class TableModel extends AbstractTableModel {
 
     private List<Teacher> teacherList;
-    private List<Teacher> tempList;
     public static final int column = 5;
-
 
     public TableModel() {
         teacherList = new ArrayList();
     }
 
-    public TableModel(List<Teacher> teachers) {
-        tempList = teachers;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public static final String columnNames[] = {
@@ -61,23 +65,8 @@ public class TableModel extends AbstractTableModel {
         return teacherList;
     }
 
-    public List<Teacher> getTempList(int startIndex, int endIndex) {
-        List<Teacher> result = new ArrayList<>();
-        for (int i = startIndex; i < endIndex; i++) {
-            result.add(tempList.get(i));
-        }
-        return result;
-    }
 
     public void setTeacherList(List<Teacher> teacherList) {
         this.teacherList = teacherList;
-    }
-
-    public List<Teacher> getTempList() {
-        return tempList;
-    }
-
-    public void setTempList(List<Teacher> tempList) {
-        this.tempList = tempList;
     }
 }

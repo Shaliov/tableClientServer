@@ -1,8 +1,7 @@
 package by.bsuir.Shaliov.ppvis.laba3.table.client.view.dialog;
 
-
-
 import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.AddDialogController;
+import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.MainFrameController;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.TableController;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.view.field.Fields;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.AcademicDegrees;
@@ -10,13 +9,17 @@ import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.AcademicTitles;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.Departments;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.Facultyes;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.model.Teacher;
+import by.bsuir.Shaliov.ppvis.laba3.table.overall.constants.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.*;
 
 /**
  * Created by Andrey on 5/31/2016.
@@ -56,15 +59,16 @@ public class AddDialog extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (!(fields.getName().getText() + fields.getSecondaryName().getText() +
                         fields.getMiddleName().getText()).equals("")) {
-                    teacherList.add(new Teacher( Facultyes.valueOf(fields.getFacultyComboBox().getSelectedItem().toString()).getName(),
+                    Teacher teacher = new Teacher(Facultyes.valueOf(fields.getFacultyComboBox().getSelectedItem().toString()).getName(),
                             Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName(),
                             fields.getName().getText(),
                             fields.getSecondaryName().getText(),
                             fields.getMiddleName().getText(),
                             AcademicTitles.valueOf(fields.getAcademicTitleComboBox().getSelectedItem().toString()).getName(),
-                            AcademicDegrees.valueOf(fields.getAcademicDegreeComboBox().getSelectedItem().toString()).getName()));
-
+                            AcademicDegrees.valueOf(fields.getAcademicDegreeComboBox().getSelectedItem().toString()).getName());
+                    AddDialogController.getInstance().addTeacherToServer(teacher);
                 }
+
                 fields.getName().setText("");
                 fields.getSecondaryName().setText("");
                 fields.getMiddleName().setText("");
@@ -78,19 +82,10 @@ public class AddDialog extends JFrame {
                 fields.getName().setText("");
                 fields.getSecondaryName().setText("");
                 fields.getMiddleName().setText("");
-                TableController.getInstance().changeNumberOfPage();
                 dispose();
             }
         });
 
-        JButton send = new JButton("Отправить");
-        send.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AddDialogController.getInstance().addTeacherListToServer(JOptionPane.showInputDialog(null, "Введите имя массива"),teacherList);
-                teacherList.clear();
-            }
-        });
 
         okBox.add(Box.createHorizontalGlue());
         okBox.add(okButton);
@@ -99,7 +94,6 @@ public class AddDialog extends JFrame {
         boxPanel.add(okBox);
         boxPanel.add(Box.createVerticalStrut(12));
         boxPanel.add(Box.createHorizontalStrut(24));
-        boxPanel.add(send);
     }
 
     public Fields getFields() {

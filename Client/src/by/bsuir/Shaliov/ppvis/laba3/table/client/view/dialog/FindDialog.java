@@ -1,7 +1,8 @@
 package by.bsuir.Shaliov.ppvis.laba3.table.client.view.dialog;
-
+import by.bsuir.Shaliov.ppvis.laba3.table.overall.constants.*;
 
 import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.TableController;
+import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.ToServerController;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.model.TableModel;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.view.field.Fields;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.view.panel.TableComponent;
@@ -14,6 +15,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,13 +71,20 @@ public class FindDialog extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 teachers.clear();
                 String fio = fields.getName().getText() + " " + fields.getSecondaryName().getText() + " " + fields.getMiddleName().getText();
-//                for (Teacher teacher : dbStorage.getTeacherList()) {
-//                    if (teacher.getFio().equals(fio)
-//                            && teacher.getDepartmentName() == Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName()) {
-//                        teachers.add(teacher);
-//                    }
-//                }
-                tableController.refresh();
+                try {
+                    ToServerController.getInstance().getOutputStream().writeObject(ClientServer.FIO_DEPARTMENT);
+                    ToServerController.getInstance().getOutputStream().writeObject(fio);
+                    ToServerController.getInstance().getOutputStream().writeObject(Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName());
+                    ToServerController.getInstance().getOutputStream().writeObject(false);
+
+                    tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                TableController.getInstance().firstPage();
                 repaint();
 
             }
@@ -85,13 +94,20 @@ public class FindDialog extends JFrame {
         AbstractAction findAcademicTitleDepartmentName = new AbstractAction("кафедра + учёное звание") {
             public void actionPerformed(ActionEvent event) {
                 teachers.clear();
-//                for (Teacher teacher : dbStorage.getTeacherList()) {
-//                    if (teacher.getDepartmentName() == Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName()
-//                            && teacher.getAcademicTitle() == AcademicTitles.valueOf(fields.getAcademicTitleComboBox().getSelectedItem().toString()).getName()) {
-//                        teachers.add(teacher);
-//                    }
-//                }
-                tableController.refresh();
+                try {
+                    ToServerController.getInstance().getOutputStream().writeObject(ClientServer.DEPARTMENT_ACADEMIC_TITLE);
+                    ToServerController.getInstance().getOutputStream().writeObject(Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName());
+                    ToServerController.getInstance().getOutputStream().writeObject(AcademicTitles.valueOf(fields.getAcademicTitleComboBox().getSelectedItem().toString()).getName());
+                    ToServerController.getInstance().getOutputStream().writeObject(false);
+
+                    tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                TableController.getInstance().firstPage();
                 repaint();
 
             }
@@ -101,15 +117,21 @@ public class FindDialog extends JFrame {
         AbstractAction findFacultyDepartmentName = new AbstractAction("факультет + кафедра") {
             public void actionPerformed(ActionEvent event) {
                 teachers.clear();
-//                for (Teacher teacher : dbStorage.getTeacherList()) {
-//                    JComboBox faculty = fields.getFacultyComboBox();
-//                    String name = faculty.getSelectedItem().toString();
-//                    if (teacher.getFaculty() == Facultyes.valueOf(name).getName()
-//                            && teacher.getDepartmentName() == Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName()) {
-//                        teachers.add(teacher);
-//                    }
-//                }
-                tableController.refresh();
+                repaint();
+                try {
+                    ToServerController.getInstance().getOutputStream().writeObject(ClientServer.FACULTU_DEPARTMENT);
+                    ToServerController.getInstance().getOutputStream().writeObject(Facultyes.valueOf(fields.getFacultyComboBox().getSelectedItem().toString()).getName());
+                    ToServerController.getInstance().getOutputStream().writeObject(Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName());
+                    ToServerController.getInstance().getOutputStream().writeObject(false);
+
+                    tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                TableController.getInstance().firstPage();
                 repaint();
 
             }
@@ -118,7 +140,7 @@ public class FindDialog extends JFrame {
         JButton cancelButton = new JButton("Закрыть");
         cancelButton.addActionListener(e -> {
             TableController.getInstance().setTableModel(tempModel);
-            TableController.getInstance().setTableModel(tempModel);
+            TableController.getInstance().getTableModel().setName("teacherTable");
             dispose();
         });
         secondBar.addSeparator(new Dimension(5, 100));

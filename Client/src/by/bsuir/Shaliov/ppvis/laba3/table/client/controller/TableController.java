@@ -1,11 +1,13 @@
 package by.bsuir.Shaliov.ppvis.laba3.table.client.controller;
 
+import by.bsuir.Shaliov.ppvis.laba3.table.overall.constants.*;
 
 import by.bsuir.Shaliov.ppvis.laba3.table.client.model.TableModel;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.model.Teacher;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,6 @@ public class TableController {
     private JSlider slider;
     private JLabel sliderMark;
     private int rowOnPage;
-    private int numberOfPage = 1;
     private int lastPage;
     private TableModel tableModel;
 
@@ -31,24 +32,16 @@ public class TableController {
             if (!slider.getValueIsAdjusting()) {
                 rowOnPage = slider.getValue();
                 sliderMark.setText(String.valueOf(rowOnPage));
-                setNumberOfPage(1);
+                try {
+                    ToServerController.getInstance().getOutputStream().writeObject(ClientServer.NUMBER_RECORDS);
+                    ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+                    ToServerController.getInstance().getOutputStream().writeObject(rowOnPage);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 firstPage();
             }
         };
-    }
-
-    public void changeNumberOfPage() {
-//        if (rowOnPage < DBStorage.getInstance().getTeacherList().size()) {
-//            tableModel.setTeacherList(DBStorage.getInstance().getTeacherList(0, rowOnPage));
-//        } else {
-//            tableModel.setTeacherList(DBStorage.getInstance().getTeacherList());
-//        }
-        refresh();
-    }
-
-    public void changeNumberOfPage(List<Teacher> teachers) {
-        tableModel.setTeacherList(teachers);
-        refresh();
     }
 
 
@@ -58,61 +51,63 @@ public class TableController {
 
 
     public void firstPage() {
-        setNumberOfPage(1);
-        changeNumberOfPage();
+        try {
+            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.FIRST_PAGE);
+            ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+            tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+
+        } catch (IOException e1) {
+            JOptionPane.showMessageDialog(null, "Server disconnected");
+
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
+        refresh();
     }
 
+
     public void lastPage() {
+        try {
+            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.LAST_PAGE);
+            ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+            tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+            refresh();
 
-        int rowOnPage = getRowOnPage();
-        int lastPage = getLastPage();
+        } catch (IOException e1) {
+            JOptionPane.showMessageDialog(null, "Server disconnected");
 
-        if (tableModel.getTempList().size() % rowOnPage == 0) {
-            setLastPage((int) Math.round((double) (tableModel.getTempList().size() / rowOnPage)));
-            setNumberOfPage(getLastPage());
-            changeNumberOfPage(tableModel.getTempList((rowOnPage * getLastPage()) - rowOnPage,
-                    tableModel.getTempList().size()));
-        } else {
-            setLastPage((int) Math.round((double) (tableModel.getTempList().size() / rowOnPage) + 1));
-            setNumberOfPage(getLastPage());
-            changeNumberOfPage(tableModel.getTempList(rowOnPage * (getLastPage() - 1),
-                    tableModel.getTempList().size()));
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
         }
     }
 
     public void prev() {
-        if (getNumberOfPage() > 1) {
-            setNumberOfPage(getNumberOfPage() - 1);
-            int numberOfPage = getNumberOfPage();
-            int rowOnPage = getRowOnPage();
-            changeNumberOfPage(tableModel.getTempList(rowOnPage * numberOfPage - rowOnPage,
-                    rowOnPage * numberOfPage));
+        try {
+            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.PREVIOUS_PAGE);
+            ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+            tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+            refresh();
+        } catch (IOException e1) {
+            JOptionPane.showMessageDialog(null, "Server disconnected");
+
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
         }
     }
 
     public void next() {
-        int numberOfPage = getNumberOfPage();
-        int rowOnPage = getRowOnPage();
+        try {
+            ToServerController.getInstance().getOutputStream().writeObject(ClientServer.NEXT_PAGE);
+            ToServerController.getInstance().getOutputStream().writeObject(tableModel.getName());
+            tableModel.setTeacherList((List<Teacher>) ToServerController.getInstance().getInputStream().readObject());
+            refresh();
 
-//        if (DBStorage.getInstance().getTeacherList().size() % rowOnPage == 0) {
-//            setLastPage((int) Math.round((double) (tableModel.getTempList().size() / rowOnPage)));
-//        } else {
-//            setLastPage((int) Math.round((double) (tableModel.getTempList().size() / rowOnPage) + 1));
-//        }
-//        int lastPage = getLastPage();
-//        if (numberOfPage != lastPage) {
-//            setNumberOfPage(numberOfPage + 1);
-//            if (tableModel.getTempList().size() % rowOnPage != 0 && numberOfPage + 1 == lastPage) {
-//                changeNumberOfPage(tableModel.getTempList(rowOnPage * numberOfPage,
-//                        tableModel.getTempList().size()));
-//            } else {
-//                changeNumberOfPage(tableModel.getTempList(rowOnPage * numberOfPage,
-//                        rowOnPage * (numberOfPage + 1)));
-//            }
-//        } else if (numberOfPage == lastPage) {
-//            setNumberOfPage(lastPage);
-//            lastPage();
-//        }
+        } catch (IOException e1) {
+            JOptionPane.showMessageDialog(null, "Server disconnected");
+
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
     }
 
     public void clear() {
@@ -168,14 +163,5 @@ public class TableController {
     public void setLastPage(int lastPage) {
         this.lastPage = lastPage;
     }
-
-    public int getNumberOfPage() {
-        return numberOfPage;
-    }
-
-    public void setNumberOfPage(int numberOfPage) {
-        this.numberOfPage = numberOfPage;
-    }
-
 
 }

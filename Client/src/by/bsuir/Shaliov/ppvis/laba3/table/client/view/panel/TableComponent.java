@@ -17,8 +17,6 @@ public class TableComponent extends JPanel {
 
     private JScrollPane scrollPane;
     private TableModel tableModel;
-    private int numberOfPage = 1;
-    private JLabel page;
     private JLabel sliderMark;
     private JSlider slider;
     private TableController tableController = TableController.getInstance();
@@ -26,9 +24,9 @@ public class TableComponent extends JPanel {
     public TableComponent() {
         tableModel = new TableModel();
         tableController.setTableModel(tableModel);
-//        tableModel.setTeacherList(DBStorage.getInstance().getTeacherList());
-//        tableModel.setTempList(DBStorage.getInstance().getTeacherList());
+        tableModel.setName("teacherTable");
         TableController.getInstance().setTableModel(tableModel);
+
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
@@ -58,10 +56,12 @@ public class TableComponent extends JPanel {
     }
 
     public TableComponent(java.util.List<Teacher> teacherList) {
-        tableModel = new TableModel(teacherList);
+        tableModel = new TableModel();
         tableModel.setTeacherList(teacherList);
         tableController.setTableModel(tableModel);
+        tableModel.setName(" ");
         TableController.getInstance().setTableModel(tableModel);
+
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
@@ -94,7 +94,6 @@ public class TableComponent extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TableController.getInstance().firstPage();
-                page.setText(String.valueOf(TableController.getInstance().getNumberOfPage()));
             }
         });
 
@@ -103,7 +102,6 @@ public class TableComponent extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TableController.getInstance().prev();
-                page.setText(String.valueOf(TableController.getInstance().getNumberOfPage()));
             }
         });
 
@@ -113,7 +111,6 @@ public class TableComponent extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TableController.getInstance().next();
-                page.setText(String.valueOf(TableController.getInstance().getNumberOfPage()));
             }
         });
 
@@ -122,31 +119,31 @@ public class TableComponent extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TableController.getInstance().lastPage();
-                page.setText(String.valueOf(TableController.getInstance().getNumberOfPage()));
             }
         });
 
-        page = new JLabel(String.valueOf(numberOfPage));
-        page.setPreferredSize(new Dimension(23, 50));
-        page.setHorizontalAlignment(JLabel.CENTER);
 
         box.add(first);
         box.add(prev);
-        box.add(page);
         box.add(next);
         box.add(last);
     }
 
     private void addSlider(Box box) {
-        slider = new JSlider(1, 50, 10);
+        slider = new JSlider(0, 20, 2);
+        slider.setMajorTickSpacing(5);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
         slider.setSnapToTicks(true);
-        sliderMark = new JLabel(String.valueOf(10));
+        sliderMark = new JLabel(String.valueOf(2));
         slider.addChangeListener(tableController.addSlideListener());
 
         tableController.setSlider(slider);
         tableController.setSliderMark(sliderMark);
-        tableController.setRowOnPage(10);
+        tableController.setRowOnPage(2);
         box.add(slider);
+        box.add(Box.createHorizontalStrut(12));
         box.add(sliderMark);
     }
 

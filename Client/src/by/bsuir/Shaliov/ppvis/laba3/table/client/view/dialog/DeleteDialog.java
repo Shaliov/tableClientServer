@@ -1,10 +1,12 @@
 package by.bsuir.Shaliov.ppvis.laba3.table.client.view.dialog;
-
+import by.bsuir.Shaliov.ppvis.laba3.table.overall.constants.*;
 
 import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.MainFrameController;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.TableController;
+import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.ToServerController;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.view.field.Fields;
 import by.bsuir.Shaliov.ppvis.laba3.table.client.view.panel.TableComponent;
+import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.AcademicDegrees;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.AcademicTitles;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.Departments;
 import by.bsuir.Shaliov.ppvis.laba3.table.overall.enumeration.Facultyes;
@@ -13,7 +15,9 @@ import by.bsuir.Shaliov.ppvis.laba3.table.overall.model.Teacher;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.util.Iterator;
+import java.awt.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by Andrey on 5/31/2016.
@@ -67,7 +71,6 @@ public class DeleteDialog extends JFrame {
             fields.getSecondaryName().setText("");
             fields.getMiddleName().setText("");
             tableController.refresh();
-            TableController.getInstance().changeNumberOfPage();
             MainFrameController.getInstance().refresh(tableComponent);
             dispose();
         });
@@ -86,19 +89,21 @@ public class DeleteDialog extends JFrame {
         Box deleteFioDepartmentNameBox = Box.createHorizontalBox();
         JButton findFioDepartmentName = new JButton("ФИО + кафедра");
         findFioDepartmentName.addActionListener(e -> {
-            int numberOfnoted = 0;
             String fio = fields.getName().getText() + " " + fields.getSecondaryName().getText() + " " + fields.getMiddleName().getText();
-//            for (Iterator<Teacher> teacherIterator = dbStorage.getTeacherList().iterator(); teacherIterator.hasNext();) {
-//                Teacher teacher = teacherIterator.next();
-//                if (teacher.getFio().equals(fio)
-//                        && teacher.getDepartmentName() == Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName())  {
-//                    teacherIterator.remove();
-//                    numberOfnoted++;
-//                }
-//            }
-            TableController.getInstance().changeNumberOfPage();
-            JOptionPane.showMessageDialog(null, "удалено записей = " + numberOfnoted,
-                    null, JOptionPane.INFORMATION_MESSAGE | JOptionPane.OK_OPTION);
+            try {
+                ToServerController.getInstance().getOutputStream().writeObject(ClientServer.FIO_DEPARTMENT);
+                ToServerController.getInstance().getOutputStream().writeObject(fio);
+                ToServerController.getInstance().getOutputStream().writeObject(Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName());
+                ToServerController.getInstance().getOutputStream().writeObject(true);
+
+                int size = (Integer) ToServerController.getInstance().getInputStream().readObject();
+                JOptionPane.showMessageDialog(null, "удалено записей = " + size,
+                        null, JOptionPane.INFORMATION_MESSAGE | JOptionPane.OK_OPTION);
+
+            } catch (IOException | ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            TableController.getInstance().firstPage();
 
         });
         deleteFioDepartmentNameBox.add(Box.createHorizontalGlue());
@@ -108,36 +113,40 @@ public class DeleteDialog extends JFrame {
 
         JButton deleteAcademicTitleDepartmentName = new JButton("кафедра + учёное звание");
         deleteAcademicTitleDepartmentName.addActionListener(e -> {
-            int numberOfnoted = 0;
-//            for (Iterator<Teacher> teacherIterator = dbStorage.getTeacherList().iterator(); teacherIterator.hasNext();) {
-//                Teacher teacher = teacherIterator.next();
-//                if (teacher.getDepartmentName() == Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName()
-//                        && teacher.getAcademicTitle() == AcademicTitles.valueOf(fields.getAcademicTitleComboBox().getSelectedItem().toString()).getName())  {
-//                    teacherIterator.remove();
-//                    numberOfnoted++;
-//                }
-//            }
-            TableController.getInstance().changeNumberOfPage();
-            JOptionPane.showMessageDialog(null, "удалено записей = " + numberOfnoted,
-                    null, JOptionPane.INFORMATION_MESSAGE | JOptionPane.OK_OPTION);
+            try {
+                ToServerController.getInstance().getOutputStream().writeObject(ClientServer.DEPARTMENT_ACADEMIC_TITLE);
+                ToServerController.getInstance().getOutputStream().writeObject(Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName());
+                ToServerController.getInstance().getOutputStream().writeObject(AcademicTitles.valueOf(fields.getAcademicTitleComboBox().getSelectedItem().toString()).getName());
+                ToServerController.getInstance().getOutputStream().writeObject(true);
+
+                int size = (Integer) ToServerController.getInstance().getInputStream().readObject();
+                JOptionPane.showMessageDialog(null, "удалено записей = " + size,
+                        null, JOptionPane.INFORMATION_MESSAGE | JOptionPane.OK_OPTION);
+
+            } catch (IOException | ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            TableController.getInstance().firstPage();
 
         });
 
         JButton deleteFacultyDepartmentName = new JButton("факультет + кафедра");
         deleteFacultyDepartmentName.addActionListener(e -> {
-            int numberOfnoted = 0;
-//            for (Iterator<Teacher> teacherIterator = dbStorage.getTeacherList().iterator(); teacherIterator.hasNext();) {
-//                Teacher teacher = teacherIterator.next();
-//                if (teacher.getFaculty() == Facultyes.valueOf(fields.getFacultyComboBox().getSelectedItem().toString()).getName()
-//                        && teacher.getDepartmentName() == Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName())  {
-//                    teacherIterator.remove();
-//                    numberOfnoted++;
-//                }
-//            }
-            TableController.getInstance().changeNumberOfPage();
-            JOptionPane.showMessageDialog(null, "удалено записей = " + numberOfnoted,
-                    null, JOptionPane.INFORMATION_MESSAGE | JOptionPane.OK_OPTION);
+            try {
+                ToServerController.getInstance().getOutputStream().writeObject(ClientServer.FACULTU_DEPARTMENT);
+                ToServerController.getInstance().getOutputStream().writeObject(Facultyes.valueOf(fields.getFacultyComboBox().getSelectedItem().toString()).getName());
+                ToServerController.getInstance().getOutputStream().writeObject(Departments.valueOf(fields.getDepartmentComboBox().getSelectedItem().toString()).getName());
+                ToServerController.getInstance().getOutputStream().writeObject(true);
 
+                int size = (Integer) ToServerController.getInstance().getInputStream().readObject();
+
+                JOptionPane.showMessageDialog(null, "удалено записей = " + size,
+                        null, JOptionPane.INFORMATION_MESSAGE | JOptionPane.OK_OPTION);
+
+            } catch (IOException | ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            TableController.getInstance().firstPage();
         });
         deleteFioDepartmentNameBox.add(deleteAcademicTitleDepartmentName);
         deleteFioDepartmentNameBox.add(Box.createHorizontalStrut(6));

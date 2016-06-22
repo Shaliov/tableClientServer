@@ -1,11 +1,9 @@
 package by.bsuir.Shaliov.ppvis.laba3.table.client.view.bar;
 
-import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.MainFrameController;
-import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.TableController;
+import by.bsuir.Shaliov.ppvis.laba3.table.client.controller.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
 /**
@@ -22,42 +20,12 @@ public class MenuBar extends JMenuBar {
     private void addFileMenu(JMenu fileMenu) {
 
         fileMenu.setMnemonic('F');
-        JMenuItem newFile = new JMenuItem("New file");
-        newFile.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-        fileMenu.add(newFile);
         JMenuItem saveFile = new JMenuItem("Save");
-        saveFile.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-
-            }
-        });
+        saveFile.addActionListener(new FileSaver() {});
         fileMenu.add(saveFile);
         JMenuItem openFile = new JMenuItem("Open file");
-        openFile.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                TableController.getInstance().firstPage();
-            }
-        });
+        openFile.addActionListener(new FileChooserListener() {});
         fileMenu.add(openFile);
-        JMenuItem closeFile = new JMenuItem("Close file");
-        closeFile.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                DBStorage.getInstance().getTeacherList().clear();
-                TableController.getInstance().refresh();
-                MainFrameController.getInstance().refresh();
-            }
-        });
-        fileMenu.add(closeFile);
     }
 
 }
